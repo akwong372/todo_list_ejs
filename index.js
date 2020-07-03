@@ -52,14 +52,32 @@ app.get('/', (req, res) => {
                 }
             });
         } else {
-            res.render('list', { kindOfDay: "Today", todos: docs });
+            res.render('list', { listTitle: "Today", todos: docs });
         }
     });
 });
 
 app.get('/:newList', (req, res) => {
-    console.log(req.params);
-    res.send(req.params);
+    const newListName = req.params.newList;
+
+    db.CustomTodoList.findOne({ name: newListName }, (err, list) => {
+        if (err) {
+            console.log(`Error finding custom list: ${err}`);
+        } else if (!list) {
+            //create new list
+            const list = new db.CustomTodoList({
+                name: newListName,
+                items: defaultTodos
+            });
+
+            list.save();
+            res.redirect(`/${newListName}`);
+
+        } else {
+            //show existing list
+            res.render('list', { listTitle: list.name, todos: list.items });
+        }
+    })
 })
 
 app.post('/', (req, res) => {

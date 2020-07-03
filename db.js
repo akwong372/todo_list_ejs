@@ -8,7 +8,14 @@ const todoSchema = new mongoose.Schema({
     }
 });
 
+const customTodoSchema = new mongoose.Schema({
+    name: String,
+    items: [todoSchema]
+});
+
 //create Todos collection
 const Todo = mongoose.model('Todo', todoSchema);
-
 module.exports.Todo = Todo;
+
+const CustomTodoList = mongoose.model('CustomTodoList', customTodoSchema);
+module.exports.CustomTodoList = CustomTodoList;
