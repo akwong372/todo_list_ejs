@@ -7,7 +7,7 @@
         <% todos.forEach( todo => { %>
             <form action="/delete" method="POST">
                 <div class="item">
-                    <input type="checkbox" name="checkItem" id="checkItem">
+                    <input type="checkbox" name="checkItem" id="checkItem" onchange="this.form.submit()" value="<%= todo._id %>">
                     <p><%= todo.name %></p>
                 </div>
             </form>

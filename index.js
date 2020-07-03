@@ -57,6 +57,11 @@ app.get('/', (req, res) => {
     });
 });
 
+app.get('/:newList', (req, res) => {
+    console.log(req.params);
+    res.send(req.params);
+})
+
 app.post('/', (req, res) => {
 
     const submitted = req.body.newListItem;
@@ -72,9 +77,17 @@ app.post('/', (req, res) => {
 });
 
 app.post('/delete', (req, res) => {
+    const checkItem = req.body.checkItem;
 
-    console.log(req.body)
-    res.redirect('/')
+    db.Todo.findByIdAndDelete(checkItem, err => {
+        if (err) {
+            console.log(`Error deleting item: ${err}`);
+            res.redirect('/');
+        } else {
+            console.log(`Deleted item: ${checkItem}`)
+            res.redirect('/');
+        }
+    });
 });
 
 app.listen(port, () => console.log(`Listening on port ${port}`));
