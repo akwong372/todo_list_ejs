@@ -40,12 +40,12 @@ var todo3 = new db.Todo({
 var defaultTodos = [todo1, todo2, todo3];
 
 app.get('/', (req, res) => {
-    db.Todo.find({}, (err, docs)=>{
-        if (err){
+    db.Todo.find({}, (err, docs) => {
+        if (err) {
             console.log(err);
         } else if (docs.length === 0) {
             db.Todo.insertMany(defaultTodos, (err, docs) => {
-                if (err){
+                if (err) {
                     console.log(err);
                 } else {
                     res.redirect('/');
@@ -59,13 +59,22 @@ app.get('/', (req, res) => {
 
 app.post('/', (req, res) => {
 
-    const newItem = new db.Todo({ 
-        name: req.body.newListItem
-    });
+    const submitted = req.body.newListItem;
+    if (submitted.length > 0) {
+        const newItem = new db.Todo({
+            name: req.body.newListItem
+        });
 
-    newItem.save();
+        newItem.save();
+    }
 
     res.redirect('/');
+});
+
+app.post('/delete', (req, res) => {
+
+    console.log(req.body)
+    res.redirect('/')
 });
 
 app.listen(port, () => console.log(`Listening on port ${port}`));
