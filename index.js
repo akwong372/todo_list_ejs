@@ -12,22 +12,6 @@ app.set('view engine', 'ejs');
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(express.static('public'));
 
-db.Todo.insertMany([{
-    name: "item 1"
-},
-{
-    name: "item 2"
-},
-{
-    name: "item 3"
-}], (err, docs) => {
-    if (err){
-        console.log(err);
-    } else {
-        
-        console.log(docs);
-    }
-})
 
 // const testTodo = new db.Todo({ name: "test todo item"});
 // console.log(db)
@@ -41,12 +25,46 @@ db.Todo.insertMany([{
 //     }
 // })
 
+var todo1 = new db.Todo({
+    name: "item 1"
+});
+
+var todo2 = new db.Todo({
+    name: "item 2"
+});
+
+var todo3 = new db.Todo({
+    name: "item 3"
+});
+
+var defaultTodos = [todo1, todo2, todo3];
+
 app.get('/', (req, res) => {
-    res.render('list', { kindOfDay: "Today", todos: todos });
+    db.Todo.find({}, (err, docs)=>{
+        if (err){
+            console.log(err);
+        } else if (docs.length === 0) {
+            db.Todo.insertMany(defaultTodos, (err, docs) => {
+                if (err){
+                    console.log(err);
+                } else {
+                    res.redirect('/');
+                }
+            });
+        } else {
+            res.render('list', { kindOfDay: "Today", todos: docs });
+        }
+    });
 });
 
 app.post('/', (req, res) => {
-    todos.push(req.body.newListItem);
+
+    const newItem = new db.Todo({ 
+        name: req.body.newListItem
+    });
+
+    newItem.save();
+
     res.redirect('/');
 });
 
