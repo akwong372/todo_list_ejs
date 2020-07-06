@@ -4,7 +4,7 @@ const bodyParser = require('body-parser');
 const db = require('./db');
 
 const app = express();
-const port = 3000;
+const port = process.env.PORT;
 
 app.set('view engine', 'ejs');
 app.use(bodyParser.urlencoded({ extended: true }));
@@ -118,6 +118,10 @@ app.post('/delete', (req, res) => {
     }
 
 });
+
+if (port === null || port === ""){
+    port = 3000;
+}
 
 app.listen(port, () => console.log(`Listening on port ${port}`));
 

@@ -11,6 +11,9 @@
     "lodash": "^4.17.15",
     "mongoose": "^5.9.21"
   },
+  "engines": {
+    "node": "12.13.0"
+  },
   "devDependencies": {
     "nodemon": "^2.0.4"
   },
