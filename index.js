@@ -2,29 +2,13 @@ const express = require('express');
 const _ = require('lodash');
 const bodyParser = require('body-parser');
 const db = require('./db');
-// const currentDate = require('./date.js');
 
 const app = express();
 const port = 3000;
 
-// var todos = ['item 1', 'item 2'];
-
 app.set('view engine', 'ejs');
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(express.static('public'));
-
-
-// const testTodo = new db.Todo({ name: "test todo item"});
-// console.log(db)
-// testTodo.save();
-
-// db.Todo.find({}, (err, docs)=>{
-//     if (err){
-//         console.log(err);
-//     } else {
-//         console.log(docs)
-//     }
-// })
 
 var todo1 = new db.Todo({
     name: "item 1"
