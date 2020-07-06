@@ -4,7 +4,7 @@ const bodyParser = require('body-parser');
 const db = require('./db');
 
 const app = express();
-const port = process.env.PORT;
+const port = process.env.PORT || 3000;
 
 app.set('view engine', 'ejs');
 app.use(bodyParser.urlencoded({ extended: true }));
@@ -98,12 +98,12 @@ app.post('/delete', (req, res) => {
     const checkItemListName = req.body.listName.trim();
 
     if (checkItemListName === 'Today') {
-        db.Todo.findByIdAndDelete(checkItem, err => {
+        db.Todo.findByIdAndDelete(checkItemId, err => {
             if (err) {
                 console.log(`Error deleting item: ${err}`);
                 res.redirect('/');
             } else {
-                console.log(`Deleted item: ${checkItem}`)
+                console.log(`Deleted item: ${checkItemId}`)
                 res.redirect('/');
             }
         });
@@ -118,10 +118,6 @@ app.post('/delete', (req, res) => {
     }
 
 });
-
-if (port === null || port === ""){
-    port = 3000;
-}
 
 app.listen(port, () => console.log(`Listening on port ${port}`));
 
