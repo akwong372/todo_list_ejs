@@ -1,4 +1,5 @@
 const express = require('express');
+const _ = require('lodash');
 const bodyParser = require('body-parser');
 const db = require('./db');
 // const currentDate = require('./date.js');
@@ -58,7 +59,7 @@ app.get('/', (req, res) => {
 });
 
 app.get('/:newList', (req, res) => {
-    const newListName = req.params.newList;
+    const newListName = _.capitalize(req.params.newList);
 
     db.CustomTodoList.findOne({ name: newListName }, (err, list) => {
         if (err) {
@@ -83,29 +84,55 @@ app.get('/:newList', (req, res) => {
 app.post('/', (req, res) => {
 
     const submitted = req.body.newListItem;
+    const submittedTitle = req.body.listName.trim();
+
     if (submitted.length > 0) {
         const newItem = new db.Todo({
-            name: req.body.newListItem
+            name: submitted
         });
 
-        newItem.save();
+        if (submittedTitle === 'Today') {
+            newItem.save();
+            res.redirect('/');
+        } else {
+            db.CustomTodoList.findOne({ name: submittedTitle }, (err, list) => {
+                if (err) {
+                    console.log(err);
+                } else {
+                    list.items.push(newItem);
+                    list.save();
+                    res.redirect(`/${submittedTitle}`);
+                }
+            })
+        }
     }
 
-    res.redirect('/');
 });
 
 app.post('/delete', (req, res) => {
-    const checkItem = req.body.checkItem;
+    const checkItemId = req.body.checkItem;
+    const checkItemListName = req.body.listName.trim();
 
-    db.Todo.findByIdAndDelete(checkItem, err => {
-        if (err) {
-            console.log(`Error deleting item: ${err}`);
-            res.redirect('/');
-        } else {
-            console.log(`Deleted item: ${checkItem}`)
-            res.redirect('/');
-        }
-    });
+    if (checkItemListName === 'Today') {
+        db.Todo.findByIdAndDelete(checkItem, err => {
+            if (err) {
+                console.log(`Error deleting item: ${err}`);
+                res.redirect('/');
+            } else {
+                console.log(`Deleted item: ${checkItem}`)
+                res.redirect('/');
+            }
+        });
+    } else {
+        db.CustomTodoList.findOneAndUpdate({ name: checkItemListName }, { '$pull': { items: { _id: checkItemId } } }, { useFindAndModify: false }, (err, list) => {
+            if (err) {
+                console.log(`Error deleting item: ${err}`);
+            } else {
+                res.redirect(`/${checkItemListName}`);
+            }
+        })
+    }
+
 });
 
 app.listen(port, () => console.log(`Listening on port ${port}`));
